@@ -56,7 +56,7 @@ export default {
       this.$router.push({
         path
       })
-      // return
+      return
     }
     const result = await getSingerDetail(this.computedSinger)
     this.songs = await processSongs(result.songs)
