@@ -35,7 +35,8 @@
                class="icon-next"></i>
           </div>
           <div class="icon i-right">
-            <i :class="getFavoriteIcon"></i>
+            <i @click="toggleFavorite(currentSong)"
+               :class="getFavoriteIcon(currentSong)"></i>
           </div>
         </div>
       </div>
@@ -70,7 +71,8 @@ export default {
 
     // hooks
     const { modeIcon, changeMode } = useMode()
-    const { getFavoriteIcon } = useFavorite()
+    const { getFavoriteIcon, toggleFavorite } = useFavorite()
+
     // computed
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
@@ -180,8 +182,8 @@ export default {
       modeIcon,
       changeMode,
       // favorite
-      getFavoriteIcon
-
+      getFavoriteIcon,
+      toggleFavorite
     }
   }
 }
