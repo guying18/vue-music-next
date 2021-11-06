@@ -17,3 +17,12 @@ function swap (arr, i, j) {
   arr[i] = arr[j]
   arr[j] = t
 }
+
+export function formatTime (interval) {
+  // interval 向下取整（可采用 interval | 0 或者 Math.floor(interval)）
+  interval = interval | 0
+  // padStart(): 从左侧开始填充指定字符(此处为0)到当前字符串
+  const minute = ((interval / 60 | 0) + '').padStart(2, '0')
+  const second = (interval % 60 + '').padStart(2, '0')
+  return `${minute}:${second}`
+}

@@ -14,6 +14,15 @@
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{formatTime(currentTime)}}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar :progress="progress"
+                          @progress-changing="onProgressChanging"
+                          @progress-changed="onProgressChanged"></progress-bar>
+          </div>
+          <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i @click="changeMode"
@@ -44,7 +53,9 @@
     <audio ref="audioRef"
            @pause="pause"
            @canplay="ready"
-           @error="error"></audio>
+           @error="error"
+           @timeupdate="updateTime"
+           @ended="end"></audio>
   </div>
 </template>
 
@@ -53,13 +64,19 @@ import { useStore } from 'vuex'
 import { computed, ref, watch } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+import progressBar from './progress-bar.vue'
+import { formatTime } from '@/assets/js/util'
+import { PLAY_MODE } from '@/assets/js/constant'
 
 export default {
+  components: { progressBar },
   name: 'player',
   setup () {
     // data
     const audioRef = ref(null)
     const songReady = ref(false)
+    const currentTime = ref(0)
+    let progressChanging = false
 
     // vuex
     const store = useStore()
@@ -68,6 +85,7 @@ export default {
     const playing = computed(() => store.state.playing)
     const currentIndex = computed(() => store.state.currentIndex)
     const playList = computed(() => store.state.playList)
+    const playMode = computed(() => store.state.playMode)
 
     // hooks
     const { modeIcon, changeMode } = useMode()
@@ -76,6 +94,10 @@ export default {
     // computed
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
+    })
+
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration
     })
 
     const disableCls = computed(() => {
@@ -87,6 +109,7 @@ export default {
       if (!newSong.id || !newSong.url) {
         return
       }
+      currentTime.value = 0
       songReady.value = false
       const audioEl = audioRef.value
       audioEl.src = newSong.url
@@ -111,6 +134,7 @@ export default {
       store.commit('setPlayingState', !playing.value)
     }
     function pause () {
+      // console.log('pause')
       store.commit('setPlayingState', false)
     }
     function prev () {
@@ -153,6 +177,8 @@ export default {
       const audioEl = audioRef.value
       audioEl.currentTime = 0
       audioEl.play()
+      // 进度条拉到结尾会自动触发 pause 事件
+      store.commit('setPlayingState', true)
     }
     function ready () {
       if (songReady.value) {
@@ -165,11 +191,43 @@ export default {
       songReady.value = true
     }
 
+    function updateTime (e) {
+      // 对 currentTime 值进行修改的对象优先级更改
+      // 令进度条更改的优先级高于歌曲播放进度对 currentTime 的修改
+      if (!progressChanging) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+
+    function onProgressChanging (progress) {
+      progressChanging = true
+      currentTime.value = currentSong.value.duration * progress
+    }
+
+    function onProgressChanged (progress) {
+      progressChanging = false
+      audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+      if (!playing.value) {
+        store.commit('setPlayingState', true)
+      }
+    }
+
+    function end () {
+      currentTime.value = 0
+      if (playMode.value === PLAY_MODE.loop) {
+        loop()
+      } else {
+        next()
+      }
+    }
+
     return {
       audioRef,
       fullScreen,
+      currentTime,
       currentSong,
       playIcon,
+      progress,
       disableCls,
       goBack,
       togglePlay,
@@ -178,6 +236,11 @@ export default {
       next,
       ready,
       error,
+      updateTime,
+      formatTime,
+      onProgressChanging,
+      onProgressChanged,
+      end,
       // mode
       modeIcon,
       changeMode,
