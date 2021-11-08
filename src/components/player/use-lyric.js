@@ -23,6 +23,7 @@ export default function useLyric ({ songReady, currentTime }) {
     currentLyric.value = null
     currentLineNum.value = null
     pureMusicLyric.value = ''
+
     playingLyric.value = ''
 
     const lyric = await getLyric(newSong)
