@@ -25,10 +25,14 @@ export default function useCd () {
     const innerTransform = getComputedStyle(inner).transform
     // 内部图片是相对于父节点的旋转，要保持同步，需叠加外层和内层的旋转角度
     wrapper.style.transform = wrapperTransform === 'none'
-      ? innerTransform : innerTransform + wrapperTransform
+      ? innerTransform : (innerTransform + wrapperTransform)
     // 角度叠加也可采用 concat，用空格隔开， 是为了让矩阵叠加；
     // ? innerTransform : innerTransform.concat('', wrapperTransform)
   }
 
-  return { cdCls, cdRef, cdImageRef }
+  return {
+    cdCls,
+    cdRef,
+    cdImageRef
+  }
 }

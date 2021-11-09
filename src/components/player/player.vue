@@ -2,7 +2,7 @@
   <div class="player"
        v-show="playList.length">
     <div class="normal-player"
-         v-if="fullScreen">
+         v-show="fullScreen">
       <div class="background">
         <img src="currentSong.pic">
       </div>
@@ -64,7 +64,8 @@
                 progress-wrapper">
           <span class="time time-l">{{formatTime(currentTime)}}</span>
           <div class="progress-bar-wrapper">
-            <progress-bar :progress="progress"
+            <progress-bar ref="barRef"
+                          :progress="progress"
                           @progress-changing="onProgressChanging"
                           @progress-changed="onProgressChanged"></progress-bar>
           </div>
@@ -97,7 +98,8 @@
         </div>
       </div>
     </div>
-    <mini-player />
+    <mini-player :progress="progress"
+                 :toggle-play="togglePlay"></mini-player>
     <audio ref="audioRef"
            @pause="pause"
            @canplay="ready"
@@ -109,7 +111,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import useCd from './use-cd'
@@ -131,6 +133,7 @@ export default {
   setup () {
     // data
     const audioRef = ref(null)
+    const barRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
     let progressChanging = false
@@ -186,6 +189,13 @@ export default {
       } else {
         audioEl.pause()
         stopLyric()
+      }
+    })
+
+    watch(fullScreen, async (newFullScreen) => {
+      if (newFullScreen) {
+        await nextTick()
+        barRef.value.setOffset(progress.value)
       }
     })
 
@@ -296,6 +306,7 @@ export default {
 
     return {
       audioRef,
+      barRef,
       fullScreen,
       currentTime,
       currentSong,
