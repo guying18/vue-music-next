@@ -2,13 +2,12 @@
   <div class="singer"
        v-loading="!singers.length">
     <index-list :data="singers"
-                @select="selectSinger" />
-    <router-view v-slot="{Component}">
-      <!-- 路由过渡效果 -->
+                @select="selectSinger"></index-list>
+    <router-view v-slot="{ Component }">
       <transition appear
                   name="slide">
         <component :is="Component"
-                   :singer="seletedSinger" />
+                   :data="selectedSinger" />
       </transition>
     </router-view>
   </div>
@@ -56,7 +55,6 @@ export default {
 .singer {
   position: fixed;
   width: 100%;
-  height: 100%;
   top: 88px;
   bottom: 0;
 }

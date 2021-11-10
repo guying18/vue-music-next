@@ -145,7 +145,7 @@ export default {
     border-radius: 10px;
     text-align: center;
     background: $color-background-d;
-    font-family: Helvatica;
+    font-family: Helvetica;
     .item {
       padding: 3px;
       line-height: 1;

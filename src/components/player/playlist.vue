@@ -12,6 +12,10 @@
                  :class="modeIcon"
                  @click="changeMode"></i>
               <span class="text">{{modeText}}</span>
+              <span class="clear"
+                    @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <scroll ref="scrollRef"
@@ -31,7 +35,8 @@
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
                 <span class="delete"
-                      @click.stop="removeSong(song)">
+                      @click.stop="removeSong(song)"
+                      :class="{'disable': removing}">
                   <i class="icon-delete"></i>
                 </span>
               </li>
@@ -42,6 +47,10 @@
             <span>关闭</span>
           </div>
         </div>
+        <confirm ref="confirmRef"
+                 @confirm="confirmClear"
+                 text="是否清空播放列表"
+                 confirm-btn-text="清空"></confirm>
       </div>
     </transition>
   </teleport>
@@ -49,6 +58,7 @@
 
 <script>
 import Scroll from '@/components/base/scroll/scroll'
+import Confirm from '@/components/base/confirm/confirm.vue'
 import { computed, ref, nextTick, watch } from 'vue'
 import { useStore } from 'vuex'
 import useMode from './use-mode'
@@ -57,12 +67,15 @@ import useFavorite from './use-favorite'
 export default {
   name: 'playlist',
   components: {
-    Scroll
+    Scroll,
+    Confirm
   },
   setup () {
     const visible = ref(false)
+    const removing = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const confirmRef = ref(null)
 
     const store = useStore()
     const playList = computed(() => store.state.playList)
@@ -72,8 +85,8 @@ export default {
     const { modeIcon, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
-    watch(currentSong, async () => {
-      if (!visible.value) {
+    watch(currentSong, async (newSong) => {
+      if (!visible.value || !newSong.id) {
         return
       }
       await nextTick()
@@ -115,18 +128,43 @@ export default {
       const index = sequenceList.value.findIndex((song) => {
         return currentSong.value.id === song.id
       })
+      if (index === -1) {
+        return
+      }
       const target = listRef.value.$el.children[index]
       scrollRef.value.scroll.scrollToElement(target, 300)
     }
 
     function removeSong (song) {
+      // 防止多次重复点击删除按钮
+      if (removing.value) {
+        return
+      }
+      removing.value = true
       store.dispatch('removeSong', song)
+      if (!playList.value.length) {
+        hide()
+      }
+      setTimeout(() => {
+        removing.value = false
+      }, 300)
+    }
+
+    function showConfirm () {
+      confirmRef.value.show()
+    }
+
+    function confirmClear () {
+      store.dispatch('clearSongList')
+      hide()
     }
 
     return {
       visible,
+      removing,
       scrollRef,
       listRef,
+      confirmRef,
       playList,
       sequenceList,
       getCurrentIcon,
@@ -135,6 +173,8 @@ export default {
       selectItem,
       refreshScroll,
       removeSong,
+      showConfirm,
+      confirmClear,
       // mode
       modeIcon,
       modeText,
