@@ -15,7 +15,7 @@
 
 <script>
 import { getSingerList } from '@/service/singer.js'
-import IndexList from '@/components/base/index-list/index-list.vue'
+import IndexList from '@/components/index-list/index-list.vue'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
 
@@ -33,7 +33,7 @@ export default {
   async created () {
     const result = await getSingerList()
     this.singers = result.singers
-    console.log(result)
+    // console.log(result)
   },
   methods: {
     selectSinger (singer) {

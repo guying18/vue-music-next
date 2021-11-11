@@ -28,7 +28,8 @@
             @scroll="onScroll">
       <div class="song-list-wrapper">
         <song-list :songs="songs"
-                   @select="selectItem"></song-list>
+                   @select="selectItem"
+                   :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -36,7 +37,7 @@
 
 <script>
 import SongList from '@/components/base/song-list/song-list.vue'
-import Scroll from '@/components/base/scroll/scroll.vue'
+import Scroll from '@/components/wrap-scroll/index'
 import { mapActions, mapState } from 'vuex'
 
 const RESERVED_HEIGHT = 40
@@ -60,7 +61,8 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉，没有找到可播放的歌曲'
-    }
+    },
+    rank: Boolean
   },
   data () {
     return {
