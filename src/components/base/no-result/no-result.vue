@@ -26,6 +26,7 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/scss/variable.scss";
 @import "@/assets/scss/mixin.scss";
+
 .no-result {
   position: absolute;
   top: 50%;
