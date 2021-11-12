@@ -34,7 +34,7 @@ export default function usePullUpLoad (requestData, preventPullUpLoad) {
   })
 
   onUnmounted(() => {
-    scroll.value.destry()
+    scroll.value.destroy()
   })
 
   return {

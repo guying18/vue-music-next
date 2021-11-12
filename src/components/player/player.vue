@@ -125,6 +125,7 @@ import useCd from './use-cd'
 import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/base/scroll/scroll.vue'
 import MiniPlayer from './mini-player.vue'
@@ -162,6 +163,7 @@ export default {
     const { currentLyric, pureMusicLyric, playingLyric, currentLineNum, playLyric, stopLyric, lyricScrollRef, lyricListRef } = useLyric({ songReady, currentTime })
     const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleInteractive()
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+    const { savePlay } = usePlayHistory()
 
     // computed
     const playIcon = computed(() => {
@@ -266,6 +268,7 @@ export default {
       }
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
     // 播放出错时允许前进后退
     function error () {
@@ -361,7 +364,9 @@ export default {
       enter,
       afterEnter,
       leave,
-      afterLeave
+      afterLeave,
+      // play-history
+      savePlay
     }
   }
 }

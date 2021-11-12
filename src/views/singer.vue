@@ -27,7 +27,7 @@ export default {
   data () {
     return {
       singers: [],
-      seletedSinger: null
+      selectedSinger: null
     }
   },
   async created () {
@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     selectSinger (singer) {
-      this.seletedSinger = singer
+      this.selectedSinger = singer
       this.catchSinger(singer)
       this.$router.push({
         path: `/singer/${singer.mid}`
