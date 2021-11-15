@@ -44,6 +44,8 @@
     "eslint-plugin-vue": "^7.0.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
-    "webpack-bundle-analyzer": "^4.5.0"
+    "webpack-bundle-analyzer": "^4.5.0",
+    "xsrf": "^1.0.0",
+    "cookie-parser": "^1.4.5"
   }
 }
