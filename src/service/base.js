@@ -2,7 +2,7 @@ import axio from 'axios'
 
 const ERR_OK = 0
 // 生产环境配全路径，开发环境配根路径
-const baseURL = process.env.NODE_ENV === 'production' ? 'http://guying18.com/vue-music-next/' : '/'
+const baseURL = process.env.NODE_ENV === 'production' ? 'http://guying18.com/music-next/' : '/'
 
 axio.defaults.baseURL = baseURL
 
